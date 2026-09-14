@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FF Diamond & Membership Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 0;
+        }
+        .store-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        h1 {
+            color: #0284c7;
+            font-size: 20px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+        .sub-header-ai {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #475569;
+            font-size: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+        
+        .error-text {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .tab-menu {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 10px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: #ffffff;
+            color: #0284c7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .diamond-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .diamond-card:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+        .diamond-card.selected {
+            background: #e0f2fe;
+            border-color: #0284c7;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+        }
+        .diamond-card h3 {
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .diamond-card p {
+            font-size: 16px;
+            color: #0284c7;
+            font-weight: bold;
+        }
+        .badge {
+            display: inline-block;
+            background: #fef3c7;
+            color: #d97706;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            font-weight: bold;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .payment-option {
+            padding: 14px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            border: none;
+            position: relative;
+        }
+        .payment-option:active {
+            transform: scale(0.97);
+        }
+        .bkash-btn {
+            background: #e2136e;
+            color: white;
+            box-shadow: 0 4px 15px rgba(226, 19, 110, 0.25);
+        }
+        .nagad-btn {
+            background: #ec1c24;
+            color: white;
+            box-shadow: 0 4px 15px rgba(236, 28, 36, 0.25);
+        }
+        .rocket-btn {
+            background: #8c349b;
+            color: white;
+        }
+        .upay-btn {
+            background: #00a651;
+            color: white;
+        }
+        .payment-option span {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        #loading-overlay {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            transition: opacity 0.5s ease;
+        }
+        .loading-box {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0284c7;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .terms-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid #f59e0b;
+        }
+        .terms-box h4 {
+            color: #d97706;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .terms-box ul {
+            padding-left: 18px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .terms-box li {
+            margin-bottom: 4px;
+        }
+
+        #custom-alert-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 4000;
+            padding: 15px;
+        }
+        .custom-alert-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            animation: zoomIn 0.3s ease;
+        }
+        .custom-alert-content i {
+            font-size: 40px;
+            color: #f59e0b;
+            margin-bottom: 12px;
+        }
+        .custom-alert-content h3 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .custom-alert-content p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .alert-close-btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .alert-close-btn:hover {
+            background: #0369a1;
+        }
+
+        #payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+        .modal-content {
+            background: #ffffff;
+            border: none;
+            padding: 25px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: zoomIn 0.3s ease;
+            position: relative;
+        }
+        .close-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f5f9;
+            color: #64748b;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .close-icon:hover {
+            background: #e2e8f0;
+        }
+        .modal-header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .brand-logo-badge {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #e2136e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .modal-title-wrap h3 {
+            font-size: 18px;
+            color: #1e293b;
+            font-weight: bold;
+        }
+        .modal-title-wrap p {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .gateway-instruction-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .gateway-instruction-box h4 {
+            font-size: 13px;
+            color: #d97706;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .gateway-instruction-box ol {
+            padding-left: 16px;
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.5;
+        }
+        .gateway-instruction-box li {
+            margin-bottom: 3px;
+        }
+
+        .merchant-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+        }
+        .merchant-info span {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+        }
+        .merchant-info b {
+            font-size: 16px;
+            color: #0284c7;
+            letter-spacing: 0.5px;
+        }
+        .copy-btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .copy-btn:hover {
+            background: #0369a1;
+        }
+
+        .modal-confirm-btn {
+            width: 100%;
+            padding: 14px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 5px;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+            transition: background 0.2s;
+        }
+        .modal-confirm-btn:hover {
+            background: #15803d;
+        }
+
+        #success-msg {
+            display: none;
+            margin-top: 20px;
+            padding: 25px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            text-align: center;
+            color: #166534;
+        }
+
+        .floating-chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+        .chat-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        .chat-btn:hover {
+            transform: scale(1.1);
+        }
+        .whatsapp-chat {
+            background: #25d366;
+        }
+        .telegram-chat {
+            background: #0088cc;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div id="loading-overlay">
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <p id="loading-text" style="font-weight: bold; color: #475569; font-size: 15px;">টপআপ সার্ভার কানেক্ট হচ্ছে...</p>
+    </div>
+</div>
+
+<div id="custom-alert-modal">
+    <div class="custom-alert-content">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3 id="alert-title">সতর্কবার্তা</h3>
+        <p id="alert-desc">এই পেমেন্ট মাধ্যমটি বর্তমানে বন্ধ আছে।</p>
+        <button type="button" class="alert-close-btn" onclick="closeCustomAlert()">ঠিক আছে</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="store-header">
+        <h1>🔥 ফ্রি ফায়ার ইউআইডি টপআপ 🔥</h1>
+        <div class="sub-header-ai">AI-এর মাধ্যমে ফাস্ট তাড়াতাড়ি অর্ডার করুন</div>
+    </div>
+    
+    <form id="topup-form" onsubmit="event.preventDefault();">
+        <div class="form-group">
+            <label for="uid">ফ্রি ফায়ার ইউজার আইডি (UID)</label>
+            <input type="text" id="uid" placeholder="এখানে আপনার ইউআইডি দিন" maxlength="12" oninput="validateUidLive(this)" required>
+            <div id="uid-error" class="error-text">❌ ভুল ইউআইডি! ফ্রি ফায়ার UID অবশ্যই ৯ থেকে ১২ ডিজিটের সংখ্যা হতে হবে।</div>
+        </div>
+
+        <div class="form-group">
+            <label>প্যাকেজ সিলেক্ট করুন</label>
+            
+            <div class="tab-menu">
+                <button type="button" class="tab-btn active" onclick="switchTab(event, 'regular-tab')">💎 রেগুলার</button>
+                <button type="button" class="tab-btn" onclick="switchTab(event, 'membership-tab')">👑 মেম্বারশিপ</button>
+                <button type="button" class="tab-btn" onclick="switchTab(event, 'levelup-tab')">🚀 লেভেল আপ</button>
+                <button type="button" class="tab-btn" onclick="switchTab(event, 'combo-tab')">🔥 কম্বো প্যাক</button>
+            </div>
+
+            <div id="regular-tab" class="tab-content active">
+                <div class="diamond-card" onclick="selectDiamond(this, 'Weekly Lite', '৳৪০')"><h3>Weekly Lite</h3><p>৳৪০ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Weekly', '৳১৪২')"><h3>Weekly</h3><p>৳১৪২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '25 Diamond', '৳১৮')"><h3>25 Diamond</h3><p>৳১৮ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '50 Diamond', '৳৩১')"><h3>50 Diamond</h3><p>৳৩১ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '115 Diamond', '৳৭১')"><h3>115 Diamond</h3><p>৳৭১ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '240 Diamond', '৳১৪২')"><h3>240 Diamond</h3><p>৳১৪২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '355 Diamond', '৳২১৩')"><h3>355 Diamond</h3><p>৳২১৩ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '480 Diamond', '৳২৮৪')"><h3>480 Diamond</h3><p>৳২৮৪ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '505 Diamond', '৳৩০২')"><h3>505 Diamond</h3><p>৳৩০২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '610 Diamond', '৳৩৬০')"><h3>610 Diamond</h3><p>৳৩৬০ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '850 Diamond', '৳৫০২')"><h3>850 Diamond</h3><p>৳৫০২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '1090 Diamond', '৳৬৪৪')"><h3>1090 Diamond</h3><p>৳৬৪৪ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '1240 Diamond', '৳৭২০')"><h3>1240 Diamond</h3><p>৳৭২০ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '1720 Diamond', '৳১۰۰৪')"><h3>1720 Diamond</h3><p>৳১۰۰৪ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '2090 Diamond', '৳১২২২')"><h3>2090 Diamond</h3><p>৳১২২২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '2530 Diamond', '৳১৪৪৯')"><h3>2530 Diamond</h3><p>৳১৪৪৯ BDT</p></div>
+            </div>
+
+            <div id="membership-tab" class="tab-content">
+                <div class="diamond-card" onclick="selectDiamond(this, 'Weekly', '৳১৪২')"><h3>Weekly</h3><p>৳১৪২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'weekly lite', '৳৪১')"><h3>weekly lite</h3><p>৳৪১ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Monthly', '৳৭১১')"><h3>Monthly</h3><p>৳৭১১ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '2X Weekly', '৳২৮৪')"><h3>2X Weekly</h3><p>৳২৮৪ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '3X Weekly', '৳৪২৬')"><h3>3X Weekly</h3><p>৳৪২৬ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '5X Weekly', '৳৭১১')"><h3>5X Weekly</h3><p>৳৭১১ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '2X Monthly', '৳১৪২২')"><h3>2X Monthly</h3><p>৳১৪২২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '1Weekly + 1Monthly', '৳৮৫৩')"><h3>1Weekly + 1Monthly</h3><p>৳৮৫৩ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '4Weekly + 1Monthly', '৳১২৮০')"><h3>4Weekly + 1Monthly</h3><p>৳১২৮০ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '2x weekly lite', '৳৮১')"><h3>2x weekly lite</h3><p>৳৮১ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '3x weekly lite', '৳১২২')"><h3>3x weekly lite</h3><p>৳১২২ BDT</p></div>
+                <div class="diamond-card" onclick="selectDiamond(this, '5x Weekly Lite', '৳২০৩')"><h3>5x Weekly Lite</h3><p>৳২০৩ BDT</p></div>
+            </div>
+
+            <div id="levelup-tab" class="tab-content">
+                <div class="diamond-card" onclick="selectDiamond(this, 'Level Up Package - Level 6', '৳৩৬')">
+                    <h3>Level Up - Level 6</h3>
+                    <p>৳৩৬ BDT</p>
+                    <span class="badge">10% OFF</span>
+                </div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Level Up Package - Level 10', '৳৬৮')">
+                    <h3>Level Up - Level 10</h3>
+                    <p>৳৬৮ BDT</p>
+                    <span class="badge">10% OFF</span>
+                </div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Level Up Package - Level 15', '৳৬৮')">
+                    <h3>Level Up - Level 15</h3>
+                    <p>৳৬৮ BDT</p>
+                    <span class="badge">10% OFF</span>
+                </div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Level Up Package - Level 20', '৳৬৮')">
+                    <h3>Level Up - Level 20</h3>
+                    <p>৳৬৮ BDT</p>
+                    <span class="badge">10% OFF</span>
+                </div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Level Up Package - Level 25', '৳৬৮')">
+                    <h3>Level Up - Level 25</h3>
+                    <p>৳৬৮ BDT</p>
+                    <span class="badge">10% OFF</span>
+                </div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Level Up Package - Level 30', '৳৯৫')">
+                    <h3>Level Up - Level 30</h3>
+                    <p>৳৯৫ BDT</p>
+                    <span class="badge">10% OFF</span>
+                </div>
+                <div class="diamond-card" onclick="selectDiamond(this, 'Full Level Up (1270 Diamond)', '৳৪০০')">
+                    <h3>Full Level Up (1270)</h3>
+                    <p>৳৪০০ BDT</p>
+                    <span class="badge">10% OFF</span>
+                </div>
+            </div>
+
+            <div id="combo-tab" class="tab-content">
+                <div class="diamond-card" onclick="selectDiamond(this, '১ মান্থলি + ৩ উইকলি কম্বো', '৳১৯০')">
+                    <h3>১ মান্থলি + ৩ উইকলি</h3>
+                    <p>৳১৯০ BDT</p>
+                    <span class="badge">Combo Offer</span>
+                </div>
+            </div>
+
+            <input type="hidden" id="selected-package" required>
+            <input type="hidden" id="selected-price" required>
+        </div>
+
+        <div class="form-group">
+            <label>পেমেন্ট মাধ্যম সিলেক্ট করুন</label>
+            <div class="payment-methods">
+                <button type="button" class="payment-option bkash-btn" onclick="handlePaymentClick('Bkash')">
+                    bKash <span>SEND</span>
+                </button>
+                <button type="button" class="payment-option nagad-btn" onclick="handlePaymentClick('Nagad')">
+                    Nagad <span>SEND</span>
+                </button>
+                <button type="button" class="payment-option rocket-btn" onclick="handleInactivePayment('Rocket', 'রকেট গেটওয়ে বর্তমানে সার্ভার মেইনটেন্যান্সের কারণে সাময়িকভাবে বন্ধ আছে। দয়া করে বিকাশ বা নগদ ব্যবহার করুন।')">
+                    Rocket <span>SOON</span>
+                </button>
+                <button type="button" class="payment-option upay-btn" onclick="handleInactivePayment('Upay', 'উপায় পেমেন্ট সিস্টেম এখন অফলাইন রয়েছে। খুব শীঘ্রই এটি চালু করা হবে!')">
+                    Upay <span>SOON</span>
+                </button>
+            </div>
+            <input type="hidden" id="selected-payment" required>
+        </div>
+
+        <div class="terms-box">
+            <h4>⚠️ ডায়মন্ড ও মেম্বারশিপ শর্তাবলী:</h4>
+            <ul>
+                <li>সঠিক ফ্রি ফায়ার ইউআইডি (৯ থেকে ১২ ডিজিট) প্রদান করুন।</li>
+                <li>বিকাশ বা নগদ থেকে Send Money করার পর সঠিক TrxID দিন।</li>
+                <li>পেমেন্ট যাচাই হওয়ার পর দ্রুত ডায়মন্ড অ্যাড করে দেওয়া হবে।</li>
+            </ul>
+        </div>
+    </form>
+
+    <div id="success-msg">
+        <h3>🎉 অর্ডার সফল হয়েছে!</h3>
+        <p style="margin-top: 8px; color: #15803d;">আপনার পেমেন্ট ভেরিফাই হয়েছে এবং ইউআইডিতে ডায়মন্ড প্রসেসিং চলছে।</p>
+    </div>
+</div>
+
+<div id="payment-modal">
+    <div class="modal-content">
+        <div class="close-icon" onclick="closePaymentModal()">✕</div>
+        
+        <div class="modal-header-brand">
+            <div class="brand-logo-badge" id="brand-logo-icon">৳</div>
+            <div class="modal-title-wrap">
+                <h3 id="modal-brand-name">bKash পেমেন্ট গেটওয়ে</h3>
+                <p id="modal-selected-pkg-info">প্যাকেজ: সিলেক্ট করা হয়নি</p>
+            </div>
+        </div>
+
+        <div class="gateway-instruction-box">
+            <h4><i class="fas fa-shield-alt"></i> সেন্ড মানি করার নিয়মাবলী:</h4>
+            <ol>
+                <li>আপনার অ্যাপ বা ডায়াল কোড (*২৪৭#) থেকে সঠিক অ্যামাউন্ট <b>Send Money</b> করুন।</li>
+                <li>নিচের মার্চেন্ট নাম্বারে টাকা পাঠিয়ে দিন।</li>
+                <li>লেনদেন সম্পন্ন হওয়ার পর প্রাপ্ত আসল <b>TrxID</b> নিচে লিখুন।</li>
+            </ol>
+        </div>
+
+        <div class="merchant-row">
+            <div class="merchant-info">
+                <span>প্রদেয় মোট পরিমাণ (টাকা)</span>
+                <b id="modal-display-price" style="color: #e2136e; font-size: 20px;">৳০</b>
+            </div>
+        </div>
+
+        <div class="merchant-row">
+            <div class="merchant-info">
+                <span id="account-label">অফিশিয়াল পার্সোনাল নাম্বার</span>
+                <b id="merchant-number">01744233147</b>
+            </div>
+            <button type="button" class="copy-btn" onclick="copyNumber()">নম্বর কপি</button>
+        </div>
+
+        <div class="form-group">
+            <label for="popup-trxid" style="color: #475569; font-size: 14px;">এখানে সঠিক ট্রানজেকশন আইডি দিন</label>
+            <input type="text" id="popup-trxid" placeholder="যেমন: 9N78KJH2" style="padding: 12px; text-transform: uppercase;" maxlength="12">
+            <div id="trx-error" class="error-text">❌ সঠিক ট্রানজেকশন আইডি দিন (কমপক্ষে ৮টি অক্ষর/সংখ্যা)।</div>
+        </div>
+
+        <button type="button" class="modal-confirm-btn" onclick="confirmOrderWithDelay()">কনফার্ম করুন অর্ডার</button>
+    </div>
+</div>
+
+<div class="floating-chat">
+    <a href="https://wa.me/8801744233147" target="_blank" class="chat-btn whatsapp-chat"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://t.me/yourusername" target="_blank" class="chat-btn telegram-chat"><i class="fab fa-telegram-plane"></i></a>
+</div>
+
+<script>
+    window.addEventListener('load', () => {
+        const overlay = document.getElementById('loading-overlay');
+        const textEl = document.getElementById('loading-text');
+        
+        setTimeout(() => {
+            textEl.innerText = 'সিকিউরিটি চেক সম্পন্ন হচ্ছে...';
+        }, 1000);
+
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        }, 2000);
+    });
+
+    function switchTab(event, tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function selectDiamond(card, packageName, price) {
+        const overlay = document.getElementById('loading-overlay');
+        const textEl = document.getElementById('loading-text');
+        textEl.innerText = 'প্যাকেজ আপডেট করা হচ্ছে...';
+        overlay.style.display = 'flex';
+        overlay.style.opacity = '1';
+
+        setTimeout(() => {
+            document.querySelectorAll('.diamond-card').forEach(el => el.classList.remove('selected'));
+            card.classList.add('selected');
+            document.getElementById('selected-package').value = packageName + ' (' + price + ')';
+            document.getElementById('selected-price').value = price;
+            
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+        }, 800);
+    }
+
+    function validateUidLive(input) {
+        const uidError = document.getElementById('uid-error');
+        const val = input.value.replace(/\D/g, '');
+        input.value = val;
+        if (val.length > 0 && (val.length < 9 || val.length > 12)) {
+            uidError.style.display = 'block';
+        } else {
+            uidError.style.display = 'none';
+        }
+    }
+
+    function handlePaymentClick(method) {
+        const uid = document.getElementById('uid').value.trim();
+        const pkg = document.getElementById('selected-package').value;
+        const price = document.getElementById('selected-price').value;
+        
+        if (!uid || uid.length < 9 || uid.length > 12) {
+            alert('দয়া করে প্রথমে সঠিক ৯ থেকে ১২ ডিজিটের ফ্রি ফায়ার ইউআইডি (UID) দিন!');
+            document.getElementById('uid').focus();
+            return;
+        }
+        if (!pkg) {
+            alert('দয়া করে প্রথমে যেকোনো একটি প্যাকেজ বা ডায়মন্ড সিলেক্ট করুন!');
+            return;
+        }
+
+        const overlay = document.getElementById('loading-overlay');
+        const textEl = document.getElementById('loading-text');
+        textEl.innerText = method + ' গেটওয়ে ওপেন হচ্ছে...';
+        overlay.style.display = 'flex';
+        overlay.style.opacity = '1';
+
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+
+            document.getElementById('selected-payment').value = method;
+            
+            const logoBadge = document.getElementById('brand-logo-icon');
+            const brandTitle = document.getElementById('modal-brand-name');
+            const pkgInfo = document.getElementById('modal-selected-pkg-info');
+            const displayPrice = document.getElementById('modal-display-price');
+            
+            pkgInfo.innerText = 'প্যাকেজ: ' + pkg;
+            displayPrice.innerText = price;
+
+            if(method === 'Bkash') {
+                logoBadge.innerText = '৳';
+                logoBadge.style.background = '#e2136e';
+                brandTitle.innerText = 'bKash পেমেন্ট গেটওয়ে';
+                displayPrice.style.color = '#e2136e';
+            } else if(method === 'Nagad') {
+                logoBadge.innerText = '৳';
+                logoBadge.style.background = '#ec1c24';
+                brandTitle.innerText = 'Nagad পেমেন্ট গেটওয়ে';
+                displayPrice.style.color = '#ec1c24';
+            }
+
+            document.getElementById('payment-modal').style.display = 'flex';
+        }, 1200);
+    }
+
+    function handleInactivePayment(methodName, messageText) {
+        const overlay = document.getElementById('loading-overlay');
+        const textEl = document.getElementById('loading-text');
+        textEl.innerText = methodName + ' সার্ভার চেক করা হচ্ছে...';
+        overlay.style.display = 'flex';
+        overlay.style.opacity = '1';
+
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+
+            document.getElementById('alert-title').innerText = methodName + ' পেমেন্ট বন্ধ আছে!';
+            document.getElementById('alert-desc').innerText = messageText;
+            document.getElementById('custom-alert-modal').style.display = 'flex';
+        }, 1000);
+    }
+
+    function closeCustomAlert() {
+        document.getElementById('custom-alert-modal').style.display = 'none';
+    }
+
+    function closePaymentModal() {
+        document.getElementById('payment-modal').style.display = 'none';
+    }
+
+    function copyNumber() {
+        const numText = document.getElementById('merchant-number').innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(numText).then(() => {
+                alert('নম্বর সফলভাবে কপি হয়েছে: ' + numText);
+            }).catch(err => {
+                fallbackCopyText(numText);
+            });
+        } else {
+            fallbackCopyText(numText);
+        }
+    }
+
+    function fallbackCopyText(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                alert('নম্বর সফলভাবে কপি হয়েছে: ' + text);
+            } else {
+                alert('কপি করতে সমস্যা হয়েছে, দয়া করে ম্যানুয়াল কপি করুন।');
+            }
+        } catch (err) {
+            alert('কপি করা সম্ভব হয়নি।');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function confirmOrderWithDelay() {
+        const trxidInput = document.getElementById('popup-trxid');
+        const trxid = trxidInput.value.trim();
+        const trxError = document.getElementById('trx-error');
+
+        if (!trxid || trxid.length < 8 || /\s/.test(trxid)) {
+            trxError.style.display = 'block';
+            trxidInput.focus();
+            return;
+        }
+        trxError.style.display = 'none';
+
+        closePaymentModal();
+
+        const overlay = document.getElementById('loading-overlay');
+        const textEl = document.getElementById('loading-text');
+        overlay.style.display = 'flex';
+        overlay.style.opacity = '1';
+
+        textEl.innerText = 'পেমেন্ট গেটওয়ে থেকে TrxID ভেরিফাই করা হচ্ছে...';
+
+        setTimeout(() => {
+            textEl.innerText = 'ফ্রি ফায়ার সার্ভারে ডায়মন্ড অ্যাড হচ্ছে...';
+        }, 2000);
+
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+
+            document.getElementById('topup-form').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
+        }, 4000);
+    }
+</script>
+</body>
+</html>
